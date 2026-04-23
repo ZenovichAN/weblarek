@@ -98,3 +98,143 @@ Presenter - презентер содержит основную логику п
 `emit<T extends object>(event: string, data?: T): void` - инициализация события. При вызове события в метод передается название события и объект с данными, который будет использован как аргумент для вызова обработчика.  
 `trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие с передачей в него данных из второго параметра.
 
+
+## Данные
+
+В приложении используются следующие сущности данных.
+
+### Интерфейс `IProduct`
+
+```ts
+interface IProduct {
+    id: string;
+    description: string;
+    image: string;
+    title: string;
+    category: string;
+    price: number | null;
+}
+```
+
+Описывает товар каталога.
+
+### Интерфейс `IBuyer`
+
+```ts
+interface IBuyer {
+    payment: TPayment;
+    email: string;
+    phone: string;
+    address: string;
+}
+```
+
+Описывает данные покупателя, необходимые для оформления заказа.
+
+### Тип `TPayment`
+
+```ts
+type TPayment = 'online' | 'cash';
+```
+
+Описывает способ оплаты.
+
+### Интерфейс `IProductListResponse`
+
+```ts
+interface IProductListResponse {
+    total: number;
+    items: IProduct[];
+}
+```
+
+Описывает ответ сервера со списком товаров.
+
+### Интерфейс `IOrderRequest`
+
+```ts
+interface IOrderRequest extends IBuyer {
+    total: number;
+    items: string[];
+}
+```
+
+Описывает объект заказа, отправляемый на сервер.
+
+### Интерфейс `IOrderResponse`
+
+```ts
+interface IOrderResponse {
+    id: string;
+    total: number;
+}
+```
+
+Описывает ответ сервера после успешного оформления заказа.
+
+## Модели данных
+
+### Класс `ProductCatalog`
+
+Отвечает за хранение каталога товаров и товара, выбранного для подробного просмотра.
+
+**Поля:**
+- `_items: IProduct[]` — массив товаров каталога;
+- `_preview: IProduct | null` — товар для подробного просмотра.
+
+**Методы:**
+- `setItems(items: IProduct[]): void` — сохраняет массив товаров;
+- `getItems(): IProduct[]` — возвращает массив товаров;
+- `getItemById(id: string): IProduct | undefined` — возвращает товар по его id;
+- `setPreview(item: IProduct): void` — сохраняет товар для подробного просмотра;
+- `getPreview(): IProduct | null` — возвращает товар для подробного просмотра.
+
+### Класс `Basket`
+
+Отвечает за хранение товаров, добавленных в корзину.
+
+**Поля:**
+- `_items: IProduct[]` — массив товаров в корзине.
+
+**Методы:**
+- `getItems(): IProduct[]` — возвращает массив товаров корзины;
+- `addItem(item: IProduct): void` — добавляет товар в корзину;
+- `removeItem(id: string): void` — удаляет товар из корзины по id;
+- `clear(): void` — очищает корзину;
+- `getTotal(): number` — возвращает общую стоимость товаров;
+- `getCount(): number` — возвращает количество товаров;
+- `hasItem(id: string): boolean` — проверяет наличие товара в корзине.
+
+### Класс `Buyer`
+
+Отвечает за хранение, изменение и валидацию данных покупателя.
+
+**Поля:**
+- `_payment: TPayment | null` — способ оплаты;
+- `_email: string` — email покупателя;
+- `_phone: string` — телефон покупателя;
+- `_address: string` — адрес доставки.
+
+**Методы:**
+- `setData(data: Partial<IBuyer>): void` — частично сохраняет данные покупателя;
+- `getData(): Partial<IBuyer>` — возвращает данные покупателя;
+- `clear(): void` — очищает данные покупателя;
+- `validate(): TBuyerErrors` — возвращает объект ошибок валидации.
+
+## Слой коммуникации
+
+### Класс `WebLarekApi`
+
+Отвечает за взаимодействие приложения с сервером интернет-магазина.
+
+Класс принимает в конструктор объект, реализующий интерфейс `IApi`, и использует его методы для выполнения HTTP-запросов.
+
+**Конструктор:**
+- `constructor(api: IApi)` — принимает экземпляр класса для работы с HTTP-запросами.
+
+**Поле:**
+- `api: IApi` — объект для выполнения запросов к серверу.
+
+**Методы:**
+- `getProductList(): Promise<IProductListResponse>` — выполняет GET-запрос на эндпоинт `/product/` и возвращает список товаров;
+- `createOrder(order: IOrderRequest): Promise<IOrderResponse>` — выполняет POST-запрос на эндпоинт `/order` и отправляет данные заказа на сервер.
