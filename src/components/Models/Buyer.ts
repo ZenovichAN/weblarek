@@ -31,9 +31,9 @@ export class Buyer {
         }
     }
 
-    getData(): Partial<IBuyer> {
+    getData(): IBuyer {
         return {
-            payment: this._payment ?? undefined,
+            payment: this._payment,
             email: this._email,
             phone: this._phone,
             address: this._address

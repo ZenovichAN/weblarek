@@ -217,7 +217,7 @@ interface IOrderResponse {
 
 **Методы:**
 - `setData(data: Partial<IBuyer>): void` — частично сохраняет данные покупателя;
-- `getData(): Partial<IBuyer>` — возвращает данные покупателя;
+- `getData(): IBuyer` — возвращает данные покупателя;
 - `clear(): void` — очищает данные покупателя;
 - `validate(): TBuyerErrors` — возвращает объект ошибок валидации.
 
