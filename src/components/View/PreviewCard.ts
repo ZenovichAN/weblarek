@@ -14,22 +14,20 @@ export class PreviewCard extends Card {
     protected _image: HTMLImageElement;
     protected _description: HTMLElement;
     protected _button: HTMLButtonElement;
+    protected onToggleBasket: () => void;
 
-    constructor(container: HTMLElement, events: IEvents) {
+    constructor(container: HTMLElement, events: IEvents, onToggleBasket: () => void) {
         super(container, events);
 
+        this.onToggleBasket = onToggleBasket;
         this._category = ensureElement<HTMLElement>('.card__category', this.container);
         this._image = ensureElement<HTMLImageElement>('.card__image', this.container);
         this._description = ensureElement<HTMLElement>('.card__text', this.container);
         this._button = ensureElement<HTMLButtonElement>('.card__button', this.container);
 
         this._button.addEventListener('click', () => {
-            this.events.emit('card:toggle-basket', { id: this.container.dataset.id });
+            this.onToggleBasket();
         });
-    }
-
-    set id(value: string) {
-        this.container.dataset.id = value;
     }
 
     set category(value: string) {

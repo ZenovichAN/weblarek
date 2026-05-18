@@ -7,15 +7,17 @@ import { Card } from './Card';
 export class CatalogCard extends Card {
     protected _category: HTMLElement;
     protected _image: HTMLImageElement;
+    protected onClick: () => void;
 
-    constructor(container: HTMLElement, events: IEvents) {
+    constructor(container: HTMLElement, events: IEvents, onClick: () => void) {
         super(container, events);
 
+        this.onClick = onClick;
         this._category = ensureElement<HTMLElement>('.card__category', this.container);
         this._image = ensureElement<HTMLImageElement>('.card__image', this.container);
 
         this.container.addEventListener('click', () => {
-            this.events.emit('card:select', { id: this.container.dataset.id });
+            this.onClick();
         });
     }
 
@@ -26,10 +28,6 @@ export class CatalogCard extends Card {
 
     set image(value: string) {
         this.setImage(this._image, `${CDN_URL}${value}`, this._title.textContent || '');
-    }
-
-    set id(value: string) {
-        this.container.dataset.id = value;
     }
 
     render(data?: Partial<IProduct>): HTMLElement {
